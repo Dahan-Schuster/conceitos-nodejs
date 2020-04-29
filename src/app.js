@@ -98,8 +98,29 @@ app.put("/repositories/:id", celebrate({
 	return response.json(newRepository)
 });
 
+
+/**
+ * Deve deletar o repositório com o id presente nos parâmetros da rota
+ */
 app.delete("/repositories/:id", (request, response) => {
-  // TODO
+	const { id } = request.params
+
+	if (!isUuid(id)) {
+		return response.status(400).json({ error: 'ID inválido' })
+	}
+
+	const repositoryIndex = repositories
+		.findIndex(repository => repository.id === id)
+
+	if (repositoryIndex < 0) {
+		return response.status(400).json({
+			error: 'Nenhum repositório encontrado com o ID enviado'
+		})
+	}
+
+	repositories.splice(repositoryIndex, 1)
+
+	return response.status(204).send()
 });
 
 app.post("/repositories/:id/like", (request, response) => {
