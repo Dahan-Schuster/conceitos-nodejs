@@ -123,8 +123,31 @@ app.delete("/repositories/:id", (request, response) => {
 	return response.status(204).send()
 });
 
+
+/**
+ * Deve aumentar o número de likes do repositório específico escolhido através 
+ * do id presente nos parâmetros da rota, a cada chamada dessa rota, o número 
+ * de likes deve ser aumentado em 1
+ */
 app.post("/repositories/:id/like", (request, response) => {
-  // TODO
+	const { id } = request.params
+
+	if (!isUuid(id)) {
+		return response.status(400).json({ error: 'ID inválido' })
+	}
+
+	const repositoryIndex = repositories
+		.findIndex(repository => repository.id === id)
+
+	if (repositoryIndex < 0) {
+		return response.status(400).json({
+			error: 'Nenhum repositório encontrado com o ID enviado'
+		})
+	}
+
+	repositories[repositoryIndex].likes++
+
+	return response.json(repositories[repositoryIndex])
 });
 
 module.exports = app;
